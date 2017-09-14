@@ -1,0 +1,1 @@
+﻿QtGuid4.lib(QtGuid4.dll) : fatal error LNK1112: module machine type 'X86' conflicts with target machine type 'x64'

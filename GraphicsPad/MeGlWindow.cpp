@@ -1,5 +1,8 @@
 #include <gl\glew.h>
 #include <MeGlWindow.h>
+#include <iostream>
+#include <fstream>
+using namespace std;
 
 extern const char* vertexShaderCode;
 extern const char* fragmentShaderCode;
@@ -37,15 +40,29 @@ void sendDataToOpenGL()
 		indices, GL_STATIC_DRAW);
 }
 
+string readShaderCode(const char* fileName) {
+	ifstream meInput(fileName);
+	if (!meInput.good()) {
+		cout << "Filefailed to load... " << fileName;
+		exit(1);
+	}
+
+	return std::string(
+		std::istreambuf_iterator<char>(meInput),
+		std::istreambuf_iterator<char>()
+		);
+}
+
+
 void installShaders()
 {
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const char* adapter[1];
-	adapter[0] = vertexShaderCode;
+	adapter[0] = readShaderCode("VertexShaderCode.glsl").c_str;
 	glShaderSource(vertexShaderID, 1, adapter, 0);
-	adapter[0] = fragmentShaderCode;
+	adapter[0] = readShaderCode("FragmentShaderCode.glsl").c_str;
 	glShaderSource(fragmentShaderID, 1, adapter, 0);
 
 	glCompileShader(vertexShaderID);

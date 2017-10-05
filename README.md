@@ -1,2 +1,0 @@
-# OpenGLPractice
-MyOpenGL

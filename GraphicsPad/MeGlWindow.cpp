@@ -13,10 +13,10 @@ const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 GLuint programID;
 
-float rotatePos;
+float rotateValue = 0;
 
-glm::vec3 position;
-glm::vec3 scaleObject;
+glm::vec3 position = glm::vec3(+0.0f, +0.0f, +0.0f);
+glm::vec3 scaleValue = glm::vec3(+1.0f, +1.0f, +1.0f);
 
 void sendDataToOpenGL()
 {
@@ -32,17 +32,6 @@ void sendDataToOpenGL()
 		glm::vec3(+0.0f, +0.0f, +1.0f),
 	};
 
-	//glm::mat4 transform = glm::mat4(glm::translate(0.5f, 0.0f, 0.0f, 0.0f));
-
-	glm::mat4 rotateObj =glm::rotate(rotatePos, 0.0f, 0.0f, 1.0f);
-	glm::mat4 translateObj = glm::translate(position);
-	glm::mat4 scaleObj = glm::scale(glm::mat4(1.0f), scaleObject);
-
-	glm::mat4 transform = rotateObj * translateObj;
-
-	GLint uniformLocation = glGetUniformLocation(programID, "transform");
-	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &transform[0][0]);
-
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -53,8 +42,21 @@ void sendDataToOpenGL()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
 }
 
+void transformObj() {
+	glm::mat4 rotateObj = glm::rotate(rotateValue, 0.0f, 0.0f, 1.0f);
+	glm::mat4 translateObj = glm::translate(position);
+	glm::mat4 scaleObj = glm::scale(glm::mat4(1.0f), scaleValue);
+
+	glm::mat4 transform = translateObj * rotateObj;
+
+	GLint uniformLocation = glGetUniformLocation(programID, "transform");
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &transform[0][0]);
+}
+
 void MeGlWindow::paintGL()
+
 {
+	transformObj();
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -77,14 +79,21 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		position.x += 0.05f;
 		break;
 	case Qt::Key::Key_Q:
-		rotatePos += 5;
+		rotateValue += 5;
 		break;
 	case Qt::Key::Key_E:
-		rotatePos -= 5;
+		rotateValue -= 5;
+		break;
+	case Qt::Key::Key_Z:
+		scaleValue *= 2;
+		break;
+	case Qt::Key::Key_X:
+		scaleValue *= 2;
 		break;
 	case Qt::Key::Key_Escape:
 		exit(0);
 		break;
+
 	}
 	repaint();
 }

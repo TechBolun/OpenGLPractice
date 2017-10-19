@@ -13,7 +13,10 @@ const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 
 GLuint programID;
 
-float rotateN;
+float rotatePos;
+
+glm::vec3 position;
+glm::vec3 scaleObject;
 
 void sendDataToOpenGL()
 {
@@ -31,10 +34,14 @@ void sendDataToOpenGL()
 
 	//glm::mat4 transform = glm::mat4(glm::translate(0.5f, 0.0f, 0.0f, 0.0f));
 
-	glm::mat4 transform = glm::mat4(glm::rotate(45.0f, 0.0f, 0.0f, 1.0f));
+	glm::mat4 rotateObj =glm::rotate(rotatePos, 0.0f, 0.0f, 1.0f);
+	glm::mat4 translateObj = glm::translate(position);
+	glm::mat4 scaleObj = glm::scale(glm::mat4(1.0f), scaleObject);
+
+	glm::mat4 transform = rotateObj * translateObj;
 
 	GLint uniformLocation = glGetUniformLocation(programID, "transform");
-	glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, &transform[0][0]);
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &transform[0][0]);
 
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
@@ -51,6 +58,35 @@ void MeGlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void MeGlWindow::keyPressEvent(QKeyEvent* e)
+{
+	switch (e->key())
+	{
+	case Qt::Key::Key_W:
+		position.y += 0.05f;
+		break;
+	case Qt::Key::Key_S:
+		position.y -= 0.05f;
+		break;
+	case Qt::Key::Key_A:
+		position.x -= 0.05f;
+		break;
+	case Qt::Key::Key_D:
+		position.x += 0.05f;
+		break;
+	case Qt::Key::Key_Q:
+		rotatePos += 5;
+		break;
+	case Qt::Key::Key_E:
+		rotatePos -= 5;
+		break;
+	case Qt::Key::Key_Escape:
+		exit(0);
+		break;
+	}
+	repaint();
 }
 
 bool checkStatus(
@@ -133,6 +169,7 @@ void MeGlWindow::initializeGL()
 {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	sendDataToOpenGL();
 	installShaders();
+	sendDataToOpenGL();
+
 }

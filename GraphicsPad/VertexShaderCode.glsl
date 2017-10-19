@@ -9,6 +9,7 @@ out vec3 theColor;
 
 void main()
 {
-	gl_Position = transform * vec4(position, 1.0);
+	vec4 v = vec4(position, 1.0);
+	gl_Position = transform * v;
 	theColor = vertexColor;
 }

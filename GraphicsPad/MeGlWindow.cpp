@@ -3,8 +3,11 @@
 #include <fstream>
 #include <MeGlWindow.h>
 #include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtx\transform.hpp>
 #include <Primitives\Vertex.h>
+#include <ShapeData.h>
+#include <ShapeGenerator.h>
 using namespace std;
 
 const uint NUM_VERTICES_PER_TRI = 3;
@@ -15,51 +18,59 @@ GLuint programID;
 
 float rotateValue;
 
-glm::vec3 position = glm::vec3(+0.0f, +0.0f, +0.0f);
-glm::vec3 scaleValue = glm::vec3(+1.0f, +1.0f, +1.0f);
+GLuint numIndices;
+
+glm::vec3 position = glm::vec3(+0.0f, +0.0f, -3.0f);
+glm::vec3 scaleValue = glm::vec3(+2.0f, +2.0f, +2.0f);
+
+glm::vec3 rotation = glm::vec3(+0.0f, +0.0f, +0.0f);
 
 void sendDataToOpenGL()
 {
-	Vertex myTri[] =
-	{
-		glm::vec3(+0.0f, +1.0f, +0.0f),
-		glm::vec3(+1.0f, +0.0f, +0.0f),
-
-		glm::vec3(-1.0f, -1.0f, +0.0f),
-		glm::vec3(+0.0f, +1.0f, +0.0f),
-
-		glm::vec3(+1.0f, -1.0f, +0.0f),
-		glm::vec3(+0.0f, +0.0f, +1.0f),
-	};
+	ShapeData shape = ShapeGenerator::makeCube();
 
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(myTri), myTri, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
+
+	GLuint indexArrayBufferID;
+	glGenBuffers(1, &indexArrayBufferID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
+	numIndices = shape.numIndices;
+	shape.cleanup();
 }
 
-void transformObj() {
-	glm::mat4 rotateObj = glm::rotate(rotateValue, 0.0f, 0.0f, 1.0f);
+
+void MeGlWindow::paintGL()
+{
+	
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, width(), height());
+
+	//transformObj();
+	glm::mat4 rotateObjX = glm::rotate(rotation.x, 1.0f, 0.0f, 0.0f);
+	glm::mat4 rotateObjY = glm::rotate(rotation.y, 0.0f, 1.0f, 0.0f);
+	glm::mat4 rotateObjZ = glm::rotate(rotation.z, 0.0f, 0.0f, 1.0f);
 	glm::mat4 translateObj = glm::translate(position);
 	glm::mat4 scaleObj = glm::scale(glm::mat4(1.0f), scaleValue);
 
-	glm::mat4 transform = translateObj * rotateObj;
+	glm::mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 
-	GLint uniformLocation = glGetUniformLocation(programID, "transform");
-	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &transform[0][0]);
-}
+	glm::mat4 transform = projectionMatrix * translateObj * rotateObjX * rotateObjY * rotateObjZ;
 
-void MeGlWindow::paintGL()
+	GLint uniformLocation =
+		glGetUniformLocation(programID, "transform");
 
-{
-	transformObj();
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glViewport(0, 0, width(), height());
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glUniformMatrix4fv(uniformLocation, 1,
+		GL_FALSE, &transform[0][0]);
+
+	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 }
 
 void MeGlWindow::keyPressEvent(QKeyEvent* e)
@@ -78,17 +89,29 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_D:
 		position.x += 0.05f;
 		break;
-	case Qt::Key::Key_Q:
-		rotateValue += 5;
+	case Qt::Key::Key_J:
+		rotation.x += 5;
 		break;
-	case Qt::Key::Key_E:
-		rotateValue -= 5;
+	case Qt::Key::Key_L:
+		rotation.x -= 5;
+		break;
+	case Qt::Key::Key_I:
+		rotation.y += 5;
+		break;
+	case Qt::Key::Key_K:
+		rotation.y -= 5;
+		break;
+	case Qt::Key::Key_U:
+		rotation.z += 5;
+		break;
+	case Qt::Key::Key_O:
+		rotation.z -= 5;
 		break;
 	case Qt::Key::Key_Z:
 		scaleValue *= 2;
 		break;
 	case Qt::Key::Key_X:
-		scaleValue *= 2;
+		scaleValue /= 2;
 		break;
 	case Qt::Key::Key_Escape:
 		exit(0);
@@ -178,7 +201,8 @@ void MeGlWindow::initializeGL()
 {
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	installShaders();
+
 	sendDataToOpenGL();
+	installShaders();
 
 }

@@ -1,3 +1,2 @@
 ﻿  MeGlWindow.cpp
-  GraphicsPad.vcxproj -> C:\Users\u0828162\OneDrive\Git\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.exe
-  GraphicsPad.vcxproj -> C:\Users\u0828162\OneDrive\Git\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.pdb (Full PDB)
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(11): fatal error C1083: Cannot open include file: 'Camera.h': No such file or directory

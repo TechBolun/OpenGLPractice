@@ -8,6 +8,7 @@
 #include <Primitives\Vertex.h>
 #include <ShapeData.h>
 #include <ShapeGenerator.h>
+#include "Camera.h"
 using namespace std;
 
 const uint NUM_VERTICES_PER_TRI = 3;
@@ -25,14 +26,21 @@ glm::vec3 scaleValue = glm::vec3(+2.0f, +2.0f, +2.0f);
 
 glm::vec3 rotation = glm::vec3(+0.0f, +0.0f, +0.0f);
 
+Camera camera;
+
+GLuint vertexBufferID;
+
 void sendDataToOpenGL()
 {
-	ShapeData shape = ShapeGenerator::makeCube();
+	ShapeData cube = ShapeGenerator::makeCube();
+	ShapeData arrow = ShapeGenerator::makeArrow();
+	ShapeData plane = ShapeGenerator::makePlane();
 
-	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, cube.vertexBufferSize() + cube.indexBufferSize() 
+		+ arrow.vertexBufferSize() + arrow.indexBufferSize()
+		+ plane.vertexBufferSize() + plane.indexBufferSize(), 0, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
 	glEnableVertexAttribArray(1);
@@ -41,9 +49,9 @@ void sendDataToOpenGL()
 	GLuint indexArrayBufferID;
 	glGenBuffers(1, &indexArrayBufferID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexArrayBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shape.indexBufferSize(), shape.indices, GL_STATIC_DRAW);
-	numIndices = shape.numIndices;
-	shape.cleanup();
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube.indexBufferSize(), cube.indices, GL_STATIC_DRAW);
+	numIndices = cube.numIndices;
+	cube.cleanup();
 }
 
 

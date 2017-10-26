@@ -8,6 +8,9 @@ uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform vec4 ambientLight;
 
+uniform sampler2D meTexture;
+in vec2 textureCoordinate;
+
 void main()
 {
 	// Diffuse
@@ -27,6 +30,8 @@ void main()
 	float attenDistance = length(lightPosition - vertexPositionWorld);
 	float powAtten = pow(attenDistance, 2);
 	atten = 1.0 / (1.0 + atten * powAtten);
+
+	vec4 texColor = texture( meTexture, textureCoordinate );
 
 	daColor = ambientLight + atten * (clamp(diffuseLight, 0, 1) + specularLight);
 }

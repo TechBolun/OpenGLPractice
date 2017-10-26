@@ -18,6 +18,7 @@ const uint NUM_VERTICES_PER_TRI = 3;
 const uint NUM_FLOATS_PER_VERTICE = 9;
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 GLuint programID;
+GLuint textureID;
 GLuint cubeNumIndices;
 GLuint sphereNumIndices;
 GLuint planeNumIndices;
@@ -74,10 +75,12 @@ void MeGlWindow::sendDataToOpenGL()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 3));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 6));
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 9));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 	glBindVertexArray(sphereVertexArrayObjectID);
@@ -112,47 +115,73 @@ void MeGlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	mat4 fullTransformMatrix;
+	mat4 modelToProjectionMatrix;
 	mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
 	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
+	GLuint fullTransformationUniformLocation;
+	GLuint modelToWorldMatrixUniformLocation;
+
+	//ambient light
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	vec3 ambientLight(0.3f, 0.3f, 0.3f);
 	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+
+	//point light
 	GLint lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");
 	glm::vec3 lightPosition(0.0f, 5.0f, 0.0f);
 	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
 
+	//get camera postion 
+	GLint cameraPositionUniformLocation = glGetUniformLocation(programID, "cameraPosition");
+	glm::vec3 cameraPosition = camera.getPosition();
+	glUniform3fv(cameraPositionUniformLocation, 1, &cameraPosition[0]);
 
+	//named the matrixs
+	fullTransformationUniformLocation = glGetUniformLocation(programID, "modelToProjectionMatrix");
+	modelToWorldMatrixUniformLocation = glGetUniformLocation(programID, "modelToWorldMatrix");
+
+
+	//cube 1
 	glBindVertexArray(cubeVertexArrayObjectID);
 	mat4 cube1ModelToWorldMatrix =
 		glm::translate(vec3(-5.0f, 0.0f, -2.0f)) *
 		glm::rotate(-65.0f, vec3(1.0f, 3.0f, 0.0f));
-	fullTransformMatrix = worldToProjectionMatrix * cube1ModelToWorldMatrix;
-	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	modelToProjectionMatrix = worldToProjectionMatrix * cube1ModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&cube1ModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeIndexByteOffset);
 
+
+	//cube 2
 	glBindVertexArray(cubeVertexArrayObjectID);
 	mat4 cube2ModelToWorldMatrix =
 		glm::translate(vec3(3.0f, 1.0f, -0.75f)) *
 		glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
-	fullTransformMatrix = worldToProjectionMatrix * cube2ModelToWorldMatrix;
-	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	modelToProjectionMatrix = worldToProjectionMatrix * cube2ModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&cube2ModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeIndexByteOffset);
 
-	// Arrow
+	// Sphere
 	glBindVertexArray(sphereVertexArrayObjectID);
 	mat4 sphereModelToWorldMatrix = glm::translate(2.0f, 1.5f, -3.0f);
-	fullTransformMatrix = worldToProjectionMatrix * sphereModelToWorldMatrix;
-	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	modelToProjectionMatrix = worldToProjectionMatrix * sphereModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&sphereModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, sphereNumIndices, GL_UNSIGNED_SHORT, (void*)sphereIndexByteOffset);
 
 	// Plane
 	glBindVertexArray(planeVertexArrayObjectID);
 	mat4 planeModelToWorldMatrix = glm::mat4();
-	fullTransformMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
-	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &fullTransformMatrix[0][0]);
+	modelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&planeModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeIndexByteOffset);
 }
 
@@ -232,6 +261,23 @@ string MeGlWindow::readShaderCode(const char* fileName)
 	return std::string(
 		std::istreambuf_iterator<char>(meInput),
 		std::istreambuf_iterator<char>());
+}
+
+void MeGlWindow::initialTexture() {
+	
+	QImage myTexture = QGLWidget::convertToGLFormat(QImage("texture_pinky.png", "png");
+		// meImage.width(), meImage.height(), meImage.bits()
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA, myTexture.width(), myTexture.width(),
+		0, GL_RGBA, GL_UNSIGNED_BYTE, myTexture.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glUniform1i(uniformLocation, GL_TEXTURE0);
 }
 
 void MeGlWindow::installShaders()

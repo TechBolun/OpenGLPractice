@@ -62,3 +62,4 @@ void Camera::moveDown()
 {
 	position += -MOVEMENT_SPEED * UP;
 }
+

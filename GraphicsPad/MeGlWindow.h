@@ -16,6 +16,7 @@ class MeGlWindow : public QGLWidget
 		GLenum statusType);
 	std::string readShaderCode(const char* fileName);
 	void installShaders();
+	void MeGlWindow::initialTexture();
 protected:
 	void initializeGL();
 	void paintGL();

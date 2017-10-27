@@ -13,6 +13,9 @@ in vec2 textureCoordinate;
 
 void main()
 {
+
+
+
 	// Diffuse
 	vec3 lightVectorWorld = normalize(lightPosition - vertexPositionWorld);
 	float brightness = dot(lightVectorWorld, normalize(normalWorld));
@@ -33,5 +36,5 @@ void main()
 
 	vec4 texColor = texture( meTexture, textureCoordinate );
 
-	daColor = ambientLight + atten * (clamp(diffuseLight, 0, 1) + specularLight);
+	daColor = vec4(texColor * (ambientLight + atten * (clamp(diffuseLight, 0, 1) + specularLight)));
 }

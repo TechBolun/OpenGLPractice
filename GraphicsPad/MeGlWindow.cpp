@@ -264,20 +264,26 @@ string MeGlWindow::readShaderCode(const char* fileName)
 }
 
 void MeGlWindow::initialTexture() {
+
+	glEnable(GL_TEXTURE_2D);
 	
-	QImage myTexture = QGLWidget::convertToGLFormat(QImage("texture_pinky.png", "png");
+	QImage myTexture = QGLWidget::convertToGLFormat(QImage("texture_pinky.png", "png"));
 		// meImage.width(), meImage.height(), meImage.bits()
+
+	GLint pinkyDiffuse = glGetUniformLocation(programID, "meTexture");
 
 
 	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, textureID);
+	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(
 		GL_TEXTURE_2D, 0, GL_RGBA, myTexture.width(), myTexture.width(),
 		0, GL_RGBA, GL_UNSIGNED_BYTE, myTexture.bits());
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glUniform1i(uniformLocation, GL_TEXTURE0);
+	glUniform1i(pinkyDiffuse, GL_TEXTURE0);
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 void MeGlWindow::installShaders()
@@ -321,6 +327,7 @@ void MeGlWindow::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	sendDataToOpenGL();
+	initialTexture();
 	installShaders();
 	fullTransformationUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
 }

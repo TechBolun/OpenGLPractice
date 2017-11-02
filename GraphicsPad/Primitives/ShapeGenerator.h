@@ -10,7 +10,6 @@ class ShapeGenerator
 public:
 	static ShapeData makeTriangle();
 	static ShapeData makeCube();
-	static ShapeData makeSphere();
 	static ShapeData makePlane(uint dimensions = 10);
 	static ShapeData makeSphere(uint tesselation = 20);
 };

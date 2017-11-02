@@ -116,12 +116,14 @@ void MeGlWindow::paintGL()
 	glViewport(0, 0, width(), height());
 
 	mat4 modelToProjectionMatrix;
+
 	mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 20.0f);
 	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
 	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 
 	GLuint fullTransformationUniformLocation;
 	GLuint modelToWorldMatrixUniformLocation;
+	GLuint worldToTangentMatrixUniformLocation;
 
 	//ambient light
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
@@ -141,6 +143,7 @@ void MeGlWindow::paintGL()
 	//named the matrixs
 	fullTransformationUniformLocation = glGetUniformLocation(programID, "modelToProjectionMatrix");
 	modelToWorldMatrixUniformLocation = glGetUniformLocation(programID, "modelToWorldMatrix");
+	worldToTangentMatrixUniformLocation = glGetUniformLocation(programID, "worldToTangentMatrix");
 
 
 	//cube 1

@@ -15,10 +15,14 @@ using glm::vec3;
 using glm::mat4;
 
 const uint NUM_VERTICES_PER_TRI = 3;
-const uint NUM_FLOATS_PER_VERTICE = 9;
+const uint NUM_FLOATS_PER_VERTICE = 15;
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
+
 GLuint programID;
+
 GLuint textureID;
+GLuint normalID;
+
 GLuint cubeNumIndices;
 GLuint sphereNumIndices;
 GLuint planeNumIndices;
@@ -76,33 +80,43 @@ void MeGlWindow::sendDataToOpenGL()
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 3));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 6));
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 9));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 9));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sizeof(float) * 11));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 	glBindVertexArray(sphereVertexArrayObjectID);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
-	GLuint arrowByteOffset = cube.vertexBufferSize() + cube.indexBufferSize();
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)arrowByteOffset);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowByteOffset + sizeof(float) * 3));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(arrowByteOffset + sizeof(float) * 6));
+	GLuint sphereByteOffset = cube.vertexBufferSize() + cube.indexBufferSize();
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)sphereByteOffset);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereByteOffset + sizeof(float) * 3));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereByteOffset + sizeof(float) * 6));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereByteOffset + sizeof(float) * 9));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(sphereByteOffset + sizeof(float) * 11));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 	glBindVertexArray(planeVertexArrayObjectID);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
-	GLuint planeByteOffset = arrowByteOffset + sphere.vertexBufferSize() + sphere.indexBufferSize();
+	GLuint planeByteOffset = sphereByteOffset + sphere.vertexBufferSize() + sphere.indexBufferSize();
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)planeByteOffset);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeByteOffset + sizeof(float) * 3));
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeByteOffset + sizeof(float) * 6));
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeByteOffset + sizeof(float) * 9));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, VERTEX_BYTE_SIZE, (void*)(planeByteOffset + sizeof(float) * 11));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
 
 	cube.cleanup();
@@ -123,7 +137,13 @@ void MeGlWindow::paintGL()
 
 	GLuint fullTransformationUniformLocation;
 	GLuint modelToWorldMatrixUniformLocation;
-	GLuint worldToTangentMatrixUniformLocation;
+
+	GLint diffuseMap = glGetUniformLocation(programID, "meTexture");
+	glUniform1i(diffuseMap, 0);
+
+
+	GLint normalMap = glGetUniformLocation(programID, "meNormal");
+	glUniform1i(normalMap, 1);
 
 	//ambient light
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
@@ -143,7 +163,6 @@ void MeGlWindow::paintGL()
 	//named the matrixs
 	fullTransformationUniformLocation = glGetUniformLocation(programID, "modelToProjectionMatrix");
 	modelToWorldMatrixUniformLocation = glGetUniformLocation(programID, "modelToWorldMatrix");
-	worldToTangentMatrixUniformLocation = glGetUniformLocation(programID, "worldToTangentMatrix");
 
 
 	//cube 1
@@ -269,22 +288,43 @@ string MeGlWindow::readShaderCode(const char* fileName)
 void MeGlWindow::initialTexture() {
 
 	glEnable(GL_TEXTURE_2D);
+
+	//diffuse
 	
-	QImage myTexture = QGLWidget::convertToGLFormat(QImage("texture_pinky.png", "png"));
+	QImage myDiffuseTexture = QGLWidget::convertToGLFormat(QImage("texture_pinky.png", "png"));
 		// meImage.width(), meImage.height(), meImage.bits()
 
-	GLint pinkyDiffuse = glGetUniformLocation(programID, "meTexture");
+
 
 
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(
-		GL_TEXTURE_2D, 0, GL_RGBA, myTexture.width(), myTexture.width(),
-		0, GL_RGBA, GL_UNSIGNED_BYTE, myTexture.bits());
+		GL_TEXTURE_2D, 0, GL_RGBA, myDiffuseTexture.width(), myDiffuseTexture.width(),
+		0, GL_RGBA, GL_UNSIGNED_BYTE, myDiffuseTexture.bits());
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glUniform1i(pinkyDiffuse, GL_TEXTURE0);
+
+
+
+
+	//create normal
+	QImage myNormalTexture = QGLWidget::convertToGLFormat(QImage("Shapes.png", "png"));
+	// meImage.width(), meImage.height(), meImage.bits()
+
+
+
+	glActiveTexture(GL_TEXTURE1);
+	glGenTextures(1, &normalID);
+	glBindTexture(GL_TEXTURE_2D, normalID);
+	glTexImage2D(
+		GL_TEXTURE_2D, 0, GL_RGBA, myNormalTexture.width(), myNormalTexture.width(),
+		0, GL_RGBA, GL_UNSIGNED_BYTE, myNormalTexture.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
 
 	glDisable(GL_TEXTURE_2D);
 }

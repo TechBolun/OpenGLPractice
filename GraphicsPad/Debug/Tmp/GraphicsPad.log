@@ -1,2 +1,6 @@
-﻿  GraphicsPad.vcxproj -> C:\Users\u0828162\OneDrive\Git\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.exe
-  GraphicsPad.vcxproj -> C:\Users\u0828162\OneDrive\Git\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.pdb (Full PDB)
+﻿  MeGlWindow.cpp
+b:\onedrive\github\openglpractice\middleware\glm\glm\core\func_common.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+b:\onedrive\github\openglpractice\middleware\glm\glm\core\func_common.inl : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+b:\onedrive\github\openglpractice\middleware\glm\glm\core\func_integer.hpp : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+  GraphicsPad.vcxproj -> B:\OneDrive\Github\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.exe
+  GraphicsPad.vcxproj -> B:\OneDrive\Github\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.pdb (Full PDB)

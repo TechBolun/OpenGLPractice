@@ -310,7 +310,7 @@ void MeGlWindow::initialTexture() {
 
 
 	//create normal
-	QImage myNormalTexture = QGLWidget::convertToGLFormat(QImage("Shapes.png", "png"));
+	QImage myNormalTexture = QGLWidget::convertToGLFormat(QImage("scifinormal.png", "png"));
 	// meImage.width(), meImage.height(), meImage.bits()
 
 

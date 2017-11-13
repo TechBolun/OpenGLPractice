@@ -43,7 +43,7 @@ void main()
 	vec3 eyeVectorWorld = normalize(cameraPosition - vertexPositionWorld);
 	float gloss = clamp(dot(reflectedLightVectorWorld, eyeVectorWorld), 0, 1);
 	//gloss = pow(gloss, 50);
-	vec4 specularLight = vec4(gloss, 0, 0, 1);
+	vec4 specularLight = vec4(gloss, gloss, gloss, 1);
 
 	//attenuation
 	float atten = 0.01;
@@ -52,6 +52,6 @@ void main()
 	atten = 1.0 / (1.0 + atten * powAtten);
 
 	//daColor = ambientLight + atten * (diffuseLight + specularLight);
-	daColor = vec4(normalColor);
+	daColor = vec4(diffuseLight);
 	//daColor  = vec4(uv,0,0);
 }

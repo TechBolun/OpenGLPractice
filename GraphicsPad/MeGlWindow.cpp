@@ -38,6 +38,8 @@ GLuint cubeIndexByteOffset;
 GLuint sphereIndexByteOffset;
 GLuint planeIndexByteOffset;
 
+glm::vec3 lightPosition(0.0f, 5.0f, 0.0f);
+
 void MeGlWindow::sendDataToOpenGL()
 {
 	ShapeData cube = ShapeGenerator::makeCube();
@@ -152,7 +154,6 @@ void MeGlWindow::paintGL()
 
 	//point light
 	GLint lightPositionUniformLocation = glGetUniformLocation(programID, "lightPosition");
-	glm::vec3 lightPosition(0.0f, 5.0f, 0.0f);
 	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
 
 	//get camera postion 
@@ -235,6 +236,23 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_F:
 		camera.moveDown();
 		break;
+	case Qt::Key::Key_I:
+		lightPosition += glm::vec3(0, 0, -0.2);
+		break;
+	case Qt::Key::Key_K:
+		lightPosition += glm::vec3(0, 0, 0.2);
+		break;
+	case Qt::Key::Key_Left:
+		lightPosition += glm::vec3(-0.2, 0, -0.0);
+		break;
+	case Qt::Key::Key_Right:
+		lightPosition += glm::vec3(0.2, 0, -0.0);
+		break;
+	case Qt::Key::Key_Up:
+		lightPosition += glm::vec3(0, 0.2, -0.0);
+		break;
+	case Qt::Key::Key_Down:
+		lightPosition += glm::vec3(0, -0.2, -0.0);
 	}
 	repaint();
 }
@@ -307,10 +325,8 @@ void MeGlWindow::initialTexture() {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-
-
 	//create normal
-	QImage myNormalTexture = QGLWidget::convertToGLFormat(QImage("scifinormal.png", "png"));
+	QImage myNormalTexture = QGLWidget::convertToGLFormat(QImage("Shapes.png", "png"));
 	// meImage.width(), meImage.height(), meImage.bits()
 
 

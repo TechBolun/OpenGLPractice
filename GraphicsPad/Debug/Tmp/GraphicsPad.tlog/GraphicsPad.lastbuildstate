@@ -1,2 +1,6 @@
 #TargetFrameworkVersion=v4.0:PlatformToolSet=v140:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit:WindowsTargetPlatformVersion=8.1
+<<<<<<< HEAD
 Debug|Win32|C:\Users\u0828162\OneDrive\Git\OpenGLPractice\GraphicsPad\|
+=======
+Debug|Win32|C:\Users\u0828162\Google Drive\Shaders\OpenGL\OpenGLPractice\GraphicsPad\|
+>>>>>>> e5dbf2b48c21c4d54204f3b2b35d058e01e50b1a

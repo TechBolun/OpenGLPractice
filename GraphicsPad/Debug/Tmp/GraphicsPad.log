@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  MeGlWindow.cpp
 c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.h(21): error C2061: syntax error: identifier 'Camera'
 c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(140): error C2660: 'MeGlWindow::renderCamera': function does not take 1 arguments
@@ -13,3 +14,24 @@ c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(146): e
   Mainer.cpp
 c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.h(21): error C2061: syntax error: identifier 'Camera'
   Generating Code...
+=======
+﻿  ShapeGenerator.cpp
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(213): warning C4018: '<': signed/unsigned mismatch
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(215): warning C4018: '<': signed/unsigned mismatch
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(218): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(219): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(237): warning C4018: '<': signed/unsigned mismatch
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(239): warning C4018: '<': signed/unsigned mismatch
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(282): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(283): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(284): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(288): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(289): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(290): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  MeGlWindow.cpp
+  Mainer.cpp
+  Camera.cpp
+  Generating Code...
+  GraphicsPad.vcxproj -> C:\Users\u0828162\Google Drive\Shaders\OpenGL\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.exe
+  GraphicsPad.vcxproj -> C:\Users\u0828162\Google Drive\Shaders\OpenGL\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.pdb (Full PDB)
+>>>>>>> e5dbf2b48c21c4d54204f3b2b35d058e01e50b1a

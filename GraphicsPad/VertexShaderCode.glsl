@@ -13,11 +13,11 @@ out vec3 vertexPositionWorld;
 out vec2 uv;
 out mat4 tangentToModelMatrix;
 
+
 void main()
 {
 	gl_Position = modelToProjectionMatrix * vec4(pos, 1.0);
 	vertexPositionWorld = vec3(modelToWorldMatrix * vec4(pos, 1.0));
-
 	uv = vertexTexCoord;
 
 	// return normalized vec3

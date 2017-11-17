@@ -10,7 +10,7 @@ uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
 uniform vec4 ambientLight;
 
-uniform sampler2D meTexture;
+uniform sampler2D myTexture;
 uniform sampler2D meNormal;
 
 uniform mat4 modelToWorldMatrix;
@@ -34,7 +34,7 @@ void main()
 	// Diffuse
 	vec3 lightVectorWorld = normalize(lightPosition - vertexPositionWorld);
 	float brightness = clamp(dot(lightVectorWorld, normalize(normalWorldSpace)), 0, 1);
-	//vec4 texColor = texture(meTexture, uv);
+	//vec4 texColor = texture(myTexture, uv);
 	vec4 texColor = vec4(1, 1, 1, 1);
 	vec4 diffuseLight = texColor * brightness;
 

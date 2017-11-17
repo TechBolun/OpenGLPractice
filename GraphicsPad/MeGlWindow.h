@@ -6,24 +6,20 @@
 
 class MeGlWindow : public QGLWidget
 {
+
+protected:
 	void sendDataToOpenGL();
-	bool checkShaderStatus(GLuint shaderID);
-	bool checkProgramStatus(GLuint programID);
-	bool checkStatus(
-		GLuint objectID,
-		PFNGLGETSHADERIVPROC objectPropertyGetterFunc,
-		PFNGLGETSHADERINFOLOGPROC getInfoLogFunc,
-		GLenum statusType);
 	std::string readShaderCode(const char* fileName);
 	void installShaders();
 	void MeGlWindow::initialTexture();
-protected:
+	void MeGlWindow::initialCubeMap();
 	void initializeGL();
 	void paintGL();
 	void mouseMoveEvent(QMouseEvent*);
 	void keyPressEvent(QKeyEvent*);
+	static const char* CubeMapFile[];
+	void renderCamera(Camera &camera);
 public:
-	~MeGlWindow();
 };
 
 #endif

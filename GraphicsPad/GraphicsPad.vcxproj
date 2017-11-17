@@ -160,6 +160,8 @@
     <ClInclude Include="Primitives\ShapeGenerator.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CubeMapFragmentShaderCode.glsl" />
+    <None Include="CubeMapVertexShaderCode.glsl" />
     <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

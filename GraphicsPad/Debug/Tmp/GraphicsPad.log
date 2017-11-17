@@ -1,37 +1,24 @@
-<<<<<<< HEAD
 ﻿  MeGlWindow.cpp
 c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.h(21): error C2061: syntax error: identifier 'Camera'
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(140): error C2660: 'MeGlWindow::renderCamera': function does not take 1 arguments
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(143): error C2511: 'void MeGlWindow::renderCamera(Camera &)': overloaded member function not found in 'MeGlWindow'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(141): error C2660: 'MeGlWindow::renderCamera': function does not take 1 arguments
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(144): error C2511: 'void MeGlWindow::renderCamera(Camera &)': overloaded member function not found in 'MeGlWindow'
   c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.h(7): note: see declaration of 'MeGlWindow'
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(146): error C2352: 'QWidget::width': illegal call of non-static member function
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(147): error C2352: 'QWidget::width': illegal call of non-static member function
   c:\users\u0828162\onedrive\git\openglpractice\middleware\qt\include\qtgui\qwidget.h(1026): note: see declaration of 'QWidget::width'
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(146): error C2352: 'QWidget::height': illegal call of non-static member function
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(147): error C2352: 'QWidget::height': illegal call of non-static member function
   c:\users\u0828162\onedrive\git\openglpractice\middleware\qt\include\qtgui\qwidget.h(1029): note: see declaration of 'QWidget::height'
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(146): error C2672: 'glm::perspective': no matching overloaded function found
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(146): error C2780: 'glm::detail::tmat4x4<T> glm::perspective(const T &,const T &,const T &,const T &)': expects 4 arguments - 3 provided
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(147): error C2672: 'glm::perspective': no matching overloaded function found
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(147): error C2780: 'glm::detail::tmat4x4<T> glm::perspective(const T &,const T &,const T &,const T &)': expects 4 arguments - 3 provided
   c:\users\u0828162\onedrive\git\openglpractice\middleware\glm\glm\gtc\matrix_transform.hpp(182): note: see declaration of 'glm::perspective'
-  Mainer.cpp
-c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.h(21): error C2061: syntax error: identifier 'Camera'
-  Generating Code...
-=======
-﻿  ShapeGenerator.cpp
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(213): warning C4018: '<': signed/unsigned mismatch
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(215): warning C4018: '<': signed/unsigned mismatch
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(218): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(219): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(237): warning C4018: '<': signed/unsigned mismatch
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(239): warning C4018: '<': signed/unsigned mismatch
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(282): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(283): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(284): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(288): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(289): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\u0828162\google drive\shaders\opengl\openglpractice\graphicspad\primitives\shapegenerator.cpp(290): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  MeGlWindow.cpp
-  Mainer.cpp
-  Camera.cpp
-  Generating Code...
-  GraphicsPad.vcxproj -> C:\Users\u0828162\Google Drive\Shaders\OpenGL\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.exe
-  GraphicsPad.vcxproj -> C:\Users\u0828162\Google Drive\Shaders\OpenGL\OpenGLPractice\GraphicsPad\Debug\GraphicsPad.pdb (Full PDB)
->>>>>>> e5dbf2b48c21c4d54204f3b2b35d058e01e50b1a
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(213): error C2374: 'ambientLight': redefinition; multiple initialization
+  c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(155): note: see declaration of 'ambientLight'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(214): error C2374: 'ambientLightUniformLocation': redefinition; multiple initialization
+  c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(156): note: see declaration of 'ambientLightUniformLocation'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(215): error C2088: '[': illegal for struct
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(217): error C2374: 'lightPositionUniformLocation': redefinition; multiple initialization
+  c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(159): note: see declaration of 'lightPositionUniformLocation'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(221): error C2374: 'cameraPositionUniformLocation': redefinition; multiple initialization
+  c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(166): note: see declaration of 'cameraPositionUniformLocation'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(222): error C2374: 'cameraPosition': redefinition; multiple initialization
+  c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(167): note: see declaration of 'cameraPosition'
+c:\users\u0828162\onedrive\git\openglpractice\graphicspad\meglwindow.cpp(223): error C2088: '[': illegal for struct

@@ -162,6 +162,8 @@
   <ItemGroup>
     <None Include="CubeMapFragmentShaderCode.glsl" />
     <None Include="CubeMapVertexShaderCode.glsl" />
+    <None Include="PlaneTextureFragmentShaderCode.glsl" />
+    <None Include="PlaneTextureVertexShaderCode.glsl" />
     <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

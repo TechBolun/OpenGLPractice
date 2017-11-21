@@ -3,6 +3,7 @@
 #include <gl\glew.h>
 #include <QtOpenGL\qglwidget>
 #include <string>
+#include <Camera.h>
 
 class MeGlWindow : public QGLWidget
 {

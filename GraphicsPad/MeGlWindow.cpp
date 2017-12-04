@@ -21,6 +21,7 @@ const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 GLuint programID;
 GLuint CubeMapPorgramID;
 GLuint planeTextureProgramID;
+GLuint shadowProgramID;
 
 GLuint cubeNumIndices;
 GLuint sphereNumIndices;
@@ -40,6 +41,8 @@ GLuint sphereSizeOfVertexs;
 GLuint planeSizeOfVertexs;
 
 glm::vec3 lightPosition(0.0f, 5.0f, 0.0f);
+
+glm::vec3 lightObject(0.0f, 5.0f, 0.0f);
 
 GLfloat fresnelScale = 0.5f;
 
@@ -134,7 +137,7 @@ void MeGlWindow::sendDataToOpenGL()
 	plane.cleanup();
 }
 
-void MeGlWindow::renderCamera(Camera &camera) {
+void MeGlWindow::DrawObjects(Camera &camera) {
 
 	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
 	mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 150.0f);
@@ -145,7 +148,8 @@ void MeGlWindow::renderCamera(Camera &camera) {
 	glUseProgram(programID);
 
 	//ambient light
-	vec3 ambientLight(0.3f, 0.3f, 0.3f);
+	//vec3 ambientLight(0.3f, 0.3f, 0.3f);
+	vec3 ambientLight(1.0f, 1.0f, 1.0f);
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
 	//point light
@@ -167,6 +171,10 @@ void MeGlWindow::renderCamera(Camera &camera) {
 	GLint normalMap = glGetUniformLocation(programID, "meNormal");
 	glUniform1i(normalMap, 1);
 
+	GLint CubeMap = glGetUniformLocation(programID, "meCubeMap");
+	glUniform1i(CubeMap, 2);
+
+	//cube 2
 	glBindVertexArray(cubeVertexArrayObjectID);
 	mat4 cube1ModelToWorldMatrix =
 		glm::translate(vec3(-5.0f, 0.0f, -2.0f)) *
@@ -186,6 +194,17 @@ void MeGlWindow::renderCamera(Camera &camera) {
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
 		&cube2ModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
+
+	//cube 3 LightObject
+	glBindVertexArray(cubeVertexArrayObjectID);
+	mat4 cube3ModelToWorldMatrix =
+		glm::translate(lightPosition) *
+		glm::scale(0.05f, 0.05f, 0.05f);
+	modelToProjectionMatrix = worldToProjectionMatrix * cube3ModelToWorldMatrix;
+	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&cube3ModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 
 	// Sphere
@@ -210,7 +229,7 @@ void MeGlWindow::renderCamera(Camera &camera) {
 	glUseProgram(CubeMapPorgramID);
 
 	//CubeMap initial
-	GLint CubeMap = glGetUniformLocation(CubeMapPorgramID, "meCubeMap");
+	CubeMap = glGetUniformLocation(CubeMapPorgramID, "meCubeMap");
 	glUniform1i(CubeMap, 2);
 
 	glBindVertexArray(cubeVertexArrayObjectID);
@@ -231,7 +250,7 @@ void MeGlWindow::paintGL()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	renderCamera(camera);
+	DrawObjects(camera);
 }
 
 
@@ -275,11 +294,11 @@ void MeGlWindow::initialCubeMap() {
 	for (int i = 0; i < 6; i++) {
 		QImage CubeMapTexture = QGLWidget::convertToGLFormat(QImage(CubeMapFile[i], "PNG"));
 //		float a=CubeMapTexture.width();
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, CubeMapTexture.width(), CubeMapTexture.width(),
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, CubeMapTexture.width(), CubeMapTexture.height(),
 			0, GL_RGBA, GL_UNSIGNED_BYTE, CubeMapTexture.bits());
 	}
-	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -368,6 +387,9 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	case Qt::Key::Key_F:
 		camera.moveDown();
 		break;
+	case Qt::Key::Key_Escape:
+		exit(1);
+		break;
 	case Qt::Key::Key_I:
 		lightPosition += glm::vec3(0, 0, -0.2);
 		break;
@@ -388,8 +410,6 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 	}
 	repaint();
 }
-
-
 
 string MeGlWindow::readShaderCode(const char* fileName)
 {

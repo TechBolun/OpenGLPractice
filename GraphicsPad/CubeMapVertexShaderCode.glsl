@@ -7,11 +7,9 @@ in layout(location=3) vec2 uv;
 
 uniform mat4 skyboxTransformMatrix;
 out vec3 texcoord;
-out vec3 color;
 
 void main() {
 	vec4 pos = vec4(position, 1.0);
 	gl_Position = skyboxTransformMatrix * pos;
-	texcoord = vec3(position.x, -position.yz);
-	color = vertexColor;
+	texcoord = -position;
 }

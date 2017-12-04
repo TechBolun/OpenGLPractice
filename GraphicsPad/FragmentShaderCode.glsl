@@ -10,7 +10,7 @@ uniform vec4 ambientLight;
 
 uniform sampler2D myTexture;
 uniform sampler2D meNormal;
-uniform sampler2D meCubeMap;
+uniform samplerCube meCubeMap;
 
 uniform mat4 modelToWorldMatrix;
 
@@ -34,28 +34,29 @@ void main()
 	vec3 lightVectorWorld = normalize(lightPosition - vertexPositionWorld);
 	float brightness = clamp(dot(lightVectorWorld, normalize(normalWorldSpace)), 0, 1);
 	vec4 texColor = texture(myTexture, uv);
-	//vec4 texColor = vec4(1, 1, 1, 1);
 	vec4 diffuseLight = texColor * brightness;
 
 	// Specular
 	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalWorldSpace);
-	vec3 eyeVectorWorld = normalize(cameraPosition - vertexPositionWorld);
-	float gloss = clamp(dot(reflectedLightVectorWorld, eyeVectorWorld), 0, 1);
-	//gloss = pow(gloss, 50);
+	vec3 viewDir = normalize(cameraPosition - vertexPositionWorld);
+	float gloss = clamp(dot(reflectedLightVectorWorld, viewDir), 0, 1);
+	gloss = pow(gloss, 50);
 	vec4 specularLight = vec4(gloss, gloss, gloss, 1);
 
 	//CubeMap Reflection
-	//vec3 reflectDir = reflect(-eyeVectorWorld, normalWorldSpace);
-	//vec4 cubeMapColor = texture(meCubeMap, vec3(reflectDir.x, -reflectDir.yz));
+	vec3 reflectDir = reflect(-viewDir, normalize(normalWorldSpace));
+	vec4 cubeMapColor = texture(meCubeMap, vec3(reflectDir.x, -reflectDir.yz));
+	//vec4 cubeMapColor = texture(meCubeMap, reflectDir);
 
 	//attenuation
-	float atten = 0.01;
+	float atten = 1;
 	float attenDistance = length(lightPosition - vertexPositionWorld);
 	float powAtten = pow(attenDistance, 2);
 	atten = 1.0 / (1.0 + atten * powAtten);
 
-	//vec4 materialColor = ambientLight + atten * (diffuseLight + specularLight);
-	//daColor = mix(materialColor, cubeMapColor, 1.0);
-	daColor = ambientLight + atten * (diffuseLight + specularLight);
-	//daColor  = vec4(uv,0,0);
+	vec4 materialColor = ambientLight + (diffuseLight + specularLight);
+	daColor = mix(materialColor, cubeMapColor, 0.5);
+	//daColor = cubeMapColor;
+	//daColor  = vec4(cubeMapColor,0);
+	//daColor = texColor;
 }

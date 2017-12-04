@@ -19,7 +19,7 @@ protected:
 	void mouseMoveEvent(QMouseEvent*);
 	void keyPressEvent(QKeyEvent*);
 	static const char* CubeMapFile[];
-	void renderCamera(Camera &camera);
+	void DrawObjects(Camera &camera);
 public:
 };
 

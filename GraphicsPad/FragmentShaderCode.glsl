@@ -45,8 +45,8 @@ void main()
 
 	//CubeMap Reflection
 	vec3 reflectDir = reflect(-viewDir, normalize(normalWorldSpace));
-	vec4 cubeMapColor = texture(meCubeMap, vec3(reflectDir.x, -reflectDir.yz));
-	//vec4 cubeMapColor = texture(meCubeMap, reflectDir);
+	//vec4 cubeMapColor = texture(meCubeMap, vec3(reflectDir.x, -reflectDir.yz));
+	vec4 cubeMapColor = texture(meCubeMap, reflectDir);
 
 	//attenuation
 	float atten = 1;
@@ -55,8 +55,8 @@ void main()
 	atten = 1.0 / (1.0 + atten * powAtten);
 
 	vec4 materialColor = ambientLight + (diffuseLight + specularLight);
-	daColor = mix(materialColor, cubeMapColor, 0.5);
-	//daColor = cubeMapColor;
-	//daColor  = vec4(cubeMapColor,0);
+	//daColor = mix(materialColor, cubeMapColor, 0.5);
+	daColor = materialColor;
+	//daColor  = vec4(vertexPositionWorld,0);
 	//daColor = texColor;
 }

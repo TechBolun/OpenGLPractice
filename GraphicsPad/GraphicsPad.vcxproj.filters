@@ -22,5 +22,7 @@
     <None Include="PlaneTextureFragmentShaderCode.glsl" />
     <None Include="ShadowMapFragmentShader.glsl" />
     <None Include="ShadowMapVertexShader.glsl" />
+    <None Include="ReflectionVertexShaderCode.glsl" />
+    <None Include="ReflectionFragmentShaderCode.glsl" />
   </ItemGroup>
 </Project>

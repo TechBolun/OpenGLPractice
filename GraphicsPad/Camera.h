@@ -23,5 +23,7 @@ public:
 
 	glm::vec3 getPosition() const { return position; }
 
+	void setPosition(glm::vec3 newPosition) { position = newPosition; }
+
 };
 

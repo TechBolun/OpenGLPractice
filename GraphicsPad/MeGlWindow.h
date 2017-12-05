@@ -20,6 +20,7 @@ protected:
 	void keyPressEvent(QKeyEvent*);
 	static const char* CubeMapFile[];
 	void DrawObjects(Camera &camera);
+	void renderTexture();
 public:
 };
 

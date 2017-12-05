@@ -31,6 +31,10 @@ GLuint planeNumIndices;
 Camera camera;
 Camera LightCamera; //move the camera to the light dir in order to get light map
 
+GLuint FBO_holder;
+GLuint renderTex;
+GLuint depthTex;
+
 GLuint cubeVertexArrayObjectID;
 GLuint sphereVertexArrayObjectID;
 GLuint planeVertexArrayObjectID;
@@ -269,13 +273,52 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 
 void MeGlWindow::paintGL()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_holder);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
+
+	LightCamera.setPosition(lightPosition);
+	DrawObjects(LightCamera);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
+	GLuint status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	assert(status == GL_FRAMEBUFFER_COMPLETE);
 	DrawObjects(camera);
+
+	mat4 worldToViewMatrix = camera.getWorldToViewMatrix();
+	mat4 viewToProjectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 150.0f);
+	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
+	GLuint fullTransformationUniformLocation = glGetUniformLocation(programID, "modelToProjectionMatrix");;
+	GLuint modelToWorldMatrixUniformLocation = glGetUniformLocation(programID, "modelToWorldMatrix");
 }
 
+void MeGlWindow::renderTexture() {
 
+	glGenFramebuffers(1, &FBO_holder);
+	glBindFramebuffer(GL_FRAMEBUFFER, FBO_holder);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
+	glDrawBuffer(GL_DEPTH_ATTACHMENT);
+
+	glActiveTexture(GL_TEXTURE3);
+	glGenTextures(1, &renderTex);
+	glBindTexture(GL_TEXTURE_2D, renderTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width(), height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glActiveTexture(GL_TEXTURE4);
+	glGenTextures(1, &depthTex);
+	glBindTexture(GL_TEXTURE_2D, depthTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width(), height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+}
 
 void MeGlWindow::initialTexture() {
 
@@ -434,10 +477,10 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		exit(1);
 		break;
 	case Qt::Key::Key_I:
-		lightPosition += glm::vec3(0, -0.2, 0);
+		lightPosition += glm::vec3(0, 0.2, 0);
 		break;
 	case Qt::Key::Key_K:
-		lightPosition += glm::vec3(0, 0.2, 0);
+		lightPosition += glm::vec3(0, -0.2, 0);
 		break;
 	case Qt::Key::Key_Left:
 		lightPosition += glm::vec3(-0.2, 0, 0.0);
@@ -446,10 +489,10 @@ void MeGlWindow::keyPressEvent(QKeyEvent* e)
 		lightPosition += glm::vec3(0.2, 0, 0.0);
 		break;
 	case Qt::Key::Key_Up:
-		lightPosition += glm::vec3(0, 0, 0.2);
+		lightPosition += glm::vec3(0, 0, -0.2);
 		break;
 	case Qt::Key::Key_Down:
-		lightPosition += glm::vec3(0, 0, -0.2);
+		lightPosition += glm::vec3(0, 0, 0.2);
 	}
 	repaint();
 }
@@ -469,14 +512,14 @@ string MeGlWindow::readShaderCode(const char* fileName)
 
 void MeGlWindow::initializeGL()
 {
+	this->setFixedWidth(1600);
+	this->setFixedHeight(1000);
 	setMouseTracking(true);
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-//	glEnable(GL_CULL_FACE);
+	//renderTexture();
 	sendDataToOpenGL();
 	installShaders();
 	initialTexture();
 	initialCubeMap();
-	
-	//fullTransformationUniformLocation = glGetUniformLocation(programID, "fullTransformMatrix");
 }

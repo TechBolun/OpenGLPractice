@@ -164,8 +164,12 @@
     <None Include="CubeMapVertexShaderCode.glsl" />
     <None Include="PlaneTextureFragmentShaderCode.glsl" />
     <None Include="PlaneTextureVertexShaderCode.glsl" />
+    <None Include="ReceiveShadowFragmentShaderCode.glsl" />
+    <None Include="ReceiveShadowVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />
     <None Include="ReflectionVertexShaderCode.glsl" />
+    <None Include="RenderToTextureFragmentShaderCode.glsl" />
+    <None Include="RenderToTextureVertexShaderCode.glsl" />
     <None Include="ShadowMapFragmentShader.glsl" />
     <None Include="ShadowMapVertexShader.glsl" />
     <None Include="VertexShaderCode.glsl" />

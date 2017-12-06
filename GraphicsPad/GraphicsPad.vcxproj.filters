@@ -8,14 +8,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
-    <ClInclude Include="FragmentShaderCode.glsl" />
     <ClInclude Include="Primitives\Vertex.h" />
     <ClInclude Include="Primitives\ShapeData.h" />
     <ClInclude Include="Primitives\ShapeGenerator.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FragmentShaderCode.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShaderCode.glsl" />
     <None Include="CubeMapVertexShaderCode.glsl" />
     <None Include="CubeMapFragmentShaderCode.glsl" />
     <None Include="PlaneTextureVertexShaderCode.glsl" />
@@ -24,5 +23,10 @@
     <None Include="ShadowMapVertexShader.glsl" />
     <None Include="ReflectionVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />
+    <None Include="RenderToTextureFragmentShaderCode.glsl" />
+    <None Include="RenderToTextureVertexShaderCode.glsl" />
+    <None Include="ReceiveShadowVertexShaderCode.glsl" />
+    <None Include="ReceiveShadowFragmentShaderCode.glsl" />
+    <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
 </Project>

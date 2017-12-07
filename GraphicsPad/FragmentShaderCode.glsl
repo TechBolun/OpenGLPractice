@@ -49,14 +49,14 @@ void main()
 	vec4 cubeMapColor = texture(meCubeMap, reflectDir);
 
 	//attenuation
-	float atten = 1;
+	float atten = 0.1;
 	float attenDistance = length(lightPosition - vertexPositionWorld);
 	float powAtten = pow(attenDistance, 2);
 	atten = 1.0 / (1.0 + atten * powAtten);
 
 	vec4 materialColor = ambientLight + (diffuseLight + specularLight);
 	//daColor = mix(materialColor, cubeMapColor, 0.5);
-	daColor = materialColor;
+	//daColor = materialColor;
 	//daColor  = vec4(vertexPositionWorld,0);
-	//daColor = texColor;
+	daColor = ambientLight + atten * (diffuseLight);
 }

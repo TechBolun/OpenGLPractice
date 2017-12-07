@@ -11,5 +11,5 @@ out vec3 texcoord;
 void main() {
 	vec4 pos = vec4(position, 1.0);
 	gl_Position = skyboxTransformMatrix * pos;
-	texcoord = -position;
+	texcoord = - position;
 }

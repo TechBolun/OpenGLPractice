@@ -26,8 +26,9 @@ void main()
 
 	//CubeMap Reflection
 	vec3 reflectDir = reflect(-viewDir, normalize(normalWorldSpace));
-	vec4 cubeMapColor = texture(meCubeMap, reflectDir);
+	//vec4 cubeMapColor = texture(meCubeMap, reflectDir);
+	vec4 cubeMapColor = texture(meCubeMap, vec3(reflectDir.x, reflectDir.y, reflectDir.z));
 
-	//daColor = vec4(viewDir, 1.0);
+	//daColor = vec4(FragNormal, 1.0);
 	daColor = cubeMapColor;
 }

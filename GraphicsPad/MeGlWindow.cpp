@@ -45,7 +45,7 @@ GLuint cubeSizeOfVertexs;
 GLuint sphereSizeOfVertexs;
 GLuint planeSizeOfVertexs;
 
-glm::vec3 lightPosition(0.0f, 3.0f, 0.0f);
+glm::vec3 lightPosition(0.0f, 1.5f, 0.0f);
 
 GLfloat fresnelScale = 0.5f;
 
@@ -152,7 +152,7 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 
 	//ambient light
 	//vec3 ambientLight(0.3f, 0.3f, 0.3f);
-	vec3 ambientLight(1.0f, 1.0f, 1.0f);
+	glm::vec4 ambientLight = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
 	GLint ambientLightUniformLocation = glGetUniformLocation(programID, "ambientLight");
 	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
 	//point light
@@ -254,7 +254,7 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 	// Sphere
 	glBindVertexArray(sphereVertexArrayObjectID);
 	mat4 ReflectSphereModelToWorldMatrix = 
-			glm::translate(0.0f, 5.0f, 0.0f) * 
+			glm::translate(0.0f, 3.5f, 0.0f) * 
 			glm::scale(0.5f, 0.5f, 0.5f);
 	reflectionTransformMatrix = worldToProjectionMatrix * ReflectSphereModelToWorldMatrix;
 	glUniformMatrix4fv(reflectTransformMatrixUniformLocation, 1, GL_FALSE, &reflectionTransformMatrix[0][0]);
@@ -263,6 +263,17 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 	glDrawElements(GL_TRIANGLES, sphereNumIndices, GL_UNSIGNED_SHORT, (void*)sphereSizeOfVertexs);
 
 
+	//cube 4 reflectCube
+	glBindVertexArray(cubeVertexArrayObjectID);
+	mat4 reflectCubeModelToWorldMatrix =
+		glm::translate(vec3(0.0f, 1.5f, -3.0f)) *
+		glm::scale(0.4f, 0.4f, 0.4f);
+
+	reflectionTransformMatrix = worldToProjectionMatrix * reflectCubeModelToWorldMatrix;
+	glUniformMatrix4fv(reflectTransformMatrixUniformLocation, 1, GL_FALSE, &reflectionTransformMatrix[0][0]);
+	glUniformMatrix4fv(reflectModelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&reflectCubeModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 }
 
 void MeGlWindow::paintGL()
@@ -306,38 +317,43 @@ void MeGlWindow::paintGL()
 	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 
 
-	//glUseProgram(receiveShadowProgramID);
+	// plane shadow map
+	glUseProgram(receiveShadowProgramID);
 
-	//vec3 ambientLight(1.0f, 1.0f, 1.0f);
-	//GLint ambientLightUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ambientLight");
-	//glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
-	////point light
-	//GLint lightPositionUniformLocation = glGetUniformLocation(receiveShadowProgramID, "lightPosition");
-	//glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+	GLuint ShadowTransformMatrixUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ShadowModelToProjectionMatrix");
+	GLuint ShadowModelToWorldMatrixUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ShadowModelToWorldMatrix");
 
-	//GLint shadowMap = glGetUniformLocation(receiveShadowProgramID, "myShadowMap");
-	//glUniform1i(shadowMap, 4);
+	vec3 ambientLight(1.0f, 1.0f, 1.0f);
+	GLint ambientLightUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ambientLight");
+	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+	//point light
+	GLint lightPositionUniformLocation = glGetUniformLocation(receiveShadowProgramID, "lightPosition");
+	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
 
-	//// Plane
-	//glBindVertexArray(planeVertexArrayObjectID);
-	//mat4 planeModelToWorldMatrix = glm::mat4();
-	//mat4 ShadowModelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
-	//glUniformMatrix4fv(PlaneShadowTransformationUniformLocation, 1, GL_FALSE, &ShadowModelToProjectionMatrix[0][0]);
-	//glUniformMatrix4fv(ShadowModelToWorldMatrixUniformLocation, 1, GL_FALSE,
-	//	&planeModelToWorldMatrix[0][0]);
-	//glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeSizeOfVertexs);
+	GLint shadowMap = glGetUniformLocation(receiveShadowProgramID, "myShadowMap");
+	glUniform1i(shadowMap, 4);
+
+	// Plane
+	glBindVertexArray(planeVertexArrayObjectID);
+	mat4 planeModelToWorldMatrix = glm::mat4();
+
+	mat4 PlaneModelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
+	glUniformMatrix4fv(ShadowTransformMatrixUniformLocation, 1, GL_FALSE, &PlaneModelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(ShadowModelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&planeModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeSizeOfVertexs);
 }
 
 void MeGlWindow::renderTexture() {
 
-	glActiveTexture(GL_TEXTURE3);
+	
 
 	glGenFramebuffers(1, &FBO_holder);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO_holder);
 	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	glDrawBuffer(GL_DEPTH_ATTACHMENT);
 
-	
+	glActiveTexture(GL_TEXTURE3);
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width(), height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -499,6 +515,74 @@ void MeGlWindow::installShaders()
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
 
+	//Plane texture for shadow map
+	//vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	//fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	//temp = readShaderCode("PlaneTextureVertexShaderCode.glsl");
+	//adapter[0] = temp.c_str();
+	//glShaderSource(vertexShaderID, 1, adapter, 0);
+	//temp = readShaderCode("PlaneTextureFragmentShaderCode.glsl");
+	//adapter[0] = temp.c_str();
+	//glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	//glCompileShader(vertexShaderID);
+	//glCompileShader(fragmentShaderID);
+
+	//planeTextureProgramID = glCreateProgram();
+	//glAttachShader(planeTextureProgramID, vertexShaderID);
+	//glAttachShader(planeTextureProgramID, fragmentShaderID);
+
+	//glLinkProgram(planeTextureProgramID);
+
+	//glDeleteShader(vertexShaderID);
+	//glDeleteShader(fragmentShaderID);
+
+	//vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	//fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = readShaderCode("RenderToTextureVertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("RenderToTextureFragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	renderToTextureProgramID = glCreateProgram();
+	glAttachShader(renderToTextureProgramID, vertexShaderID);
+	glAttachShader(renderToTextureProgramID, fragmentShaderID);
+
+	glLinkProgram(renderToTextureProgramID);
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
+	//reveive shadow
+
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = readShaderCode("ReceiveShadowVertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("ReceiveShadowFragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	receiveShadowProgramID = glCreateProgram();
+	glAttachShader(receiveShadowProgramID, vertexShaderID);
+	glAttachShader(receiveShadowProgramID, fragmentShaderID);
+
+	glLinkProgram(receiveShadowProgramID);
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
 }
 
 void MeGlWindow::mouseMoveEvent(QMouseEvent* e)
@@ -568,8 +652,8 @@ string MeGlWindow::readShaderCode(const char* fileName)
 
 void MeGlWindow::initializeGL()
 {
-	this->setFixedWidth(1600);
-	this->setFixedHeight(1000);
+	this->setFixedWidth(1280);
+	this->setFixedHeight(720);
 	setMouseTracking(true);
 	glewInit();
 	glEnable(GL_DEPTH_TEST);

@@ -19,14 +19,14 @@
     <None Include="CubeMapFragmentShaderCode.glsl" />
     <None Include="PlaneTextureVertexShaderCode.glsl" />
     <None Include="PlaneTextureFragmentShaderCode.glsl" />
-    <None Include="ShadowMapFragmentShader.glsl" />
-    <None Include="ShadowMapVertexShader.glsl" />
     <None Include="ReflectionVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />
     <None Include="RenderToTextureFragmentShaderCode.glsl" />
     <None Include="RenderToTextureVertexShaderCode.glsl" />
-    <None Include="ReceiveShadowVertexShaderCode.glsl" />
-    <None Include="ReceiveShadowFragmentShaderCode.glsl" />
     <None Include="VertexShaderCode.glsl" />
+    <None Include="ReceiveShadowFragmentShaderCode.glsl" />
+    <None Include="ReceiveShadowVertexShaderCode.glsl" />
+    <None Include="RefractVertexShaderCode.glsl" />
+    <None Include="RefractFragmentShaderCode.glsl" />
   </ItemGroup>
 </Project>

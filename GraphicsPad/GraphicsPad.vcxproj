@@ -168,10 +168,10 @@
     <None Include="ReceiveShadowVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />
     <None Include="ReflectionVertexShaderCode.glsl" />
+    <None Include="RefractFragmentShaderCode.glsl" />
+    <None Include="RefractVertexShaderCode.glsl" />
     <None Include="RenderToTextureFragmentShaderCode.glsl" />
     <None Include="RenderToTextureVertexShaderCode.glsl" />
-    <None Include="ShadowMapFragmentShader.glsl" />
-    <None Include="ShadowMapVertexShader.glsl" />
     <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

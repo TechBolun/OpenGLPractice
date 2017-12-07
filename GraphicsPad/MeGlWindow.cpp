@@ -22,9 +22,9 @@ GLuint programID;
 GLuint CubeMapPorgramID;
 GLuint reflectCubemapProgramID;
 GLuint planeTextureProgramID;
-GLuint shadowProgramID;
 GLuint renderToTextureProgramID;
 GLuint receiveShadowProgramID;
+GLuint refractProgramID;
 
 GLuint cubeNumIndices;
 GLuint sphereNumIndices;
@@ -45,7 +45,7 @@ GLuint cubeSizeOfVertexs;
 GLuint sphereSizeOfVertexs;
 GLuint planeSizeOfVertexs;
 
-glm::vec3 lightPosition(0.0f, 1.5f, 0.0f);
+glm::vec3 lightPosition(0.0f, 3.0f, 1.5f);
 
 GLfloat fresnelScale = 0.5f;
 
@@ -180,7 +180,7 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 	//cube 1
 	glBindVertexArray(cubeVertexArrayObjectID);
 	mat4 cube1ModelToWorldMatrix =
-		glm::translate(vec3(-5.0f, 0.0f, -2.0f));
+		glm::translate(vec3(-5.0f, 1.0f, -2.0f));
 	mat4 modelToProjectionMatrix = worldToProjectionMatrix * cube1ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
@@ -190,8 +190,7 @@ void MeGlWindow::DrawObjects(Camera &camera) {
 	//cube 2
 	glBindVertexArray(cubeVertexArrayObjectID);
 	mat4 cube2ModelToWorldMatrix =
-		glm::translate(vec3(3.0f, 1.0f, -0.75f)) *
-		glm::rotate(-90.0f, vec3(1.0f, 0.0f, 0.0f));
+		glm::translate(vec3(3.0f, 1.0f, -0.75f));
 	modelToProjectionMatrix = worldToProjectionMatrix * cube2ModelToWorldMatrix;
 	glUniformMatrix4fv(fullTransformationUniformLocation, 1, GL_FALSE, &modelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(modelToWorldMatrixUniformLocation, 1, GL_FALSE,
@@ -322,31 +321,87 @@ void MeGlWindow::paintGL()
 
 	GLuint ShadowTransformMatrixUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ShadowModelToProjectionMatrix");
 	GLuint ShadowModelToWorldMatrixUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ShadowModelToWorldMatrix");
+	GLuint LightTransformMatrixUniformLocation = glGetUniformLocation(receiveShadowProgramID, "LightModelToProjectionMatrix");
 
-	vec3 ambientLight(1.0f, 1.0f, 1.0f);
+	glm::vec4 ambientLight = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
 	GLint ambientLightUniformLocation = glGetUniformLocation(receiveShadowProgramID, "ambientLight");
 	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
 	//point light
 	GLint lightPositionUniformLocation = glGetUniformLocation(receiveShadowProgramID, "lightPosition");
 	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
 
+	glm::mat4 LightModelToProjectionMatrix = viewToProjectionMatrix * LightCamera.getWorldToViewMatrix();
+	glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &LightModelToProjectionMatrix[0][0]);
+
+	//get camera position 
+	GLint cameraPositionUniformLocation = glGetUniformLocation(reflectCubemapProgramID, "cameraPosition");
+	glm::vec3 cameraPosition = camera.getPosition();
+	glUniform3fv(cameraPositionUniformLocation, 1, &cameraPosition[0]);
+
+	//texture 
+	GLint diffuseTexture = glGetUniformLocation(receiveShadowProgramID, "myTexture");
+	glUniform1i(diffuseTexture, 0);
+
+	//shadow map
 	GLint shadowMap = glGetUniformLocation(receiveShadowProgramID, "myShadowMap");
 	glUniform1i(shadowMap, 4);
 
 	// Plane
 	glBindVertexArray(planeVertexArrayObjectID);
-	mat4 planeModelToWorldMatrix = glm::mat4();
+	mat4 planeModelToWorldMatrix = glm::translate(vec3(0.0f, 0.0f, 0.0f));
 
 	mat4 PlaneModelToProjectionMatrix = worldToProjectionMatrix * planeModelToWorldMatrix;
 	glUniformMatrix4fv(ShadowTransformMatrixUniformLocation, 1, GL_FALSE, &PlaneModelToProjectionMatrix[0][0]);
 	glUniformMatrix4fv(ShadowModelToWorldMatrixUniformLocation, 1, GL_FALSE,
 		&planeModelToWorldMatrix[0][0]);
 	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeSizeOfVertexs);
+
+
+	//refract cube
+	glUseProgram(refractProgramID);
+
+	GLuint refractTransformMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToProjectionMatrix");
+	GLuint refractModelToWorldMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToWorldMatrix");
+
+
+	glm::vec4 ambientLight = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
+	GLint ambientLightUniformLocation = glGetUniformLocation(refractProgramID, "ambientLight");
+	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+	//point light
+	GLint lightPositionUniformLocation = glGetUniformLocation(refractProgramID, "lightPosition");
+	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+
+	//glm::mat4 LightModelToProjectionMatrix = viewToProjectionMatrix * LightCamera.getWorldToViewMatrix();
+	//glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &LightModelToProjectionMatrix[0][0]);
+
+	//get camera position 
+	GLint cameraPositionUniformLocation = glGetUniformLocation(refractProgramID, "cameraPosition");
+	glm::vec3 cameraPosition = camera.getPosition();
+	glUniform3fv(cameraPositionUniformLocation, 1, &cameraPosition[0]);
+
+	//texture 
+	GLint diffuseTexture = glGetUniformLocation(refractProgramID, "myTexture");
+	glUniform1i(diffuseTexture, 0);
+
+	//shadow map
+	GLint normalMap = glGetUniformLocation(refractProgramID, "NormalMap");
+	glUniform1i(normalMap, 1);
+
+	//Cube 5  refract
+
+	glBindVertexArray(cubeVertexArrayObjectID);
+	mat4 refractCubeModelToWorldMatrix =
+		glm::translate(vec3(0.0f, 1.5f, -3.0f)) *
+		glm::scale(0.4f, 0.4f, 0.4f);
+
+	mat4 refractionTransformMatrix = worldToProjectionMatrix * refractCubeModelToWorldMatrix;
+	glUniformMatrix4fv(refractTransformMatrixUniformLocation, 1, GL_FALSE, &refractionTransformMatrix[0][0]);
+	glUniformMatrix4fv(refractModelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&refractCubeModelToWorldMatrix[0][0]);
+	//glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 }
 
 void MeGlWindow::renderTexture() {
-
-	
 
 	glGenFramebuffers(1, &FBO_holder);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO_holder);
@@ -492,54 +547,10 @@ void MeGlWindow::installShaders()
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
 
-	//shadow map shader
+	// render texture
+
 	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	temp = readShaderCode("RenderToTextureVertexShaderCode.glsl");
-	adapter[0] = temp.c_str();
-	glShaderSource(vertexShaderID, 1, adapter, 0);
-	temp = readShaderCode("RenderToTextureFragmentShaderCode.glsl");
-	adapter[0] = temp.c_str();
-	glShaderSource(fragmentShaderID, 1, adapter, 0);
-
-	glCompileShader(vertexShaderID);
-	glCompileShader(fragmentShaderID);
-
-	renderToTextureProgramID = glCreateProgram();
-	glAttachShader(renderToTextureProgramID, vertexShaderID);
-	glAttachShader(renderToTextureProgramID, fragmentShaderID);
-
-	glLinkProgram(renderToTextureProgramID);
-
-	glDeleteShader(vertexShaderID);
-	glDeleteShader(fragmentShaderID);
-
-	//Plane texture for shadow map
-	//vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	//fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-	//temp = readShaderCode("PlaneTextureVertexShaderCode.glsl");
-	//adapter[0] = temp.c_str();
-	//glShaderSource(vertexShaderID, 1, adapter, 0);
-	//temp = readShaderCode("PlaneTextureFragmentShaderCode.glsl");
-	//adapter[0] = temp.c_str();
-	//glShaderSource(fragmentShaderID, 1, adapter, 0);
-
-	//glCompileShader(vertexShaderID);
-	//glCompileShader(fragmentShaderID);
-
-	//planeTextureProgramID = glCreateProgram();
-	//glAttachShader(planeTextureProgramID, vertexShaderID);
-	//glAttachShader(planeTextureProgramID, fragmentShaderID);
-
-	//glLinkProgram(planeTextureProgramID);
-
-	//glDeleteShader(vertexShaderID);
-	//glDeleteShader(fragmentShaderID);
-
-	//vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	//fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	temp = readShaderCode("RenderToTextureVertexShaderCode.glsl");
 	adapter[0] = temp.c_str();
@@ -580,6 +591,30 @@ void MeGlWindow::installShaders()
 	glAttachShader(receiveShadowProgramID, fragmentShaderID);
 
 	glLinkProgram(receiveShadowProgramID);
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
+	//refract 
+
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = readShaderCode("RefractVertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("RefractFragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	refractProgramID = glCreateProgram();
+	glAttachShader(refractProgramID, vertexShaderID);
+	glAttachShader(refractProgramID, fragmentShaderID);
+
+	glLinkProgram(refractProgramID);
 
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);

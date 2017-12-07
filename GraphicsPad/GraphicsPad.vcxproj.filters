@@ -17,8 +17,6 @@
   <ItemGroup>
     <None Include="CubeMapVertexShaderCode.glsl" />
     <None Include="CubeMapFragmentShaderCode.glsl" />
-    <None Include="PlaneTextureVertexShaderCode.glsl" />
-    <None Include="PlaneTextureFragmentShaderCode.glsl" />
     <None Include="ReflectionVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />
     <None Include="RenderToTextureFragmentShaderCode.glsl" />
@@ -28,5 +26,7 @@
     <None Include="ReceiveShadowVertexShaderCode.glsl" />
     <None Include="RefractVertexShaderCode.glsl" />
     <None Include="RefractFragmentShaderCode.glsl" />
+    <None Include="EdgeVertexShaderCode.glsl" />
+    <None Include="EdgeFragmentShaderCode.glsl" />
   </ItemGroup>
 </Project>

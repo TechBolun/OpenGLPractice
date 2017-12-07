@@ -12,6 +12,7 @@ uniform mat4 modelToWorldMatrix;
 out vec3 vertexPositionWorld;
 out vec2 uv;
 out mat4 tangentToModelMatrix;
+out vec3 Normal;
 
 
 void main()
@@ -24,5 +25,7 @@ void main()
 	vec3 bitangent = normalize(cross(normalModel, vec3(tangent)) * tangent.w);
 
 	tangentToModelMatrix = mat4(vec4(vec3(tangent), 0.0), vec4(bitangent, 0.0), vec4(normalModel, 0.0), vec4(pos, 1.0));
+
+	Normal = normalModel;
 
 }

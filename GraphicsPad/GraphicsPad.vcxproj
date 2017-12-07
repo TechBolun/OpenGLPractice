@@ -162,8 +162,8 @@
   <ItemGroup>
     <None Include="CubeMapFragmentShaderCode.glsl" />
     <None Include="CubeMapVertexShaderCode.glsl" />
-    <None Include="PlaneTextureFragmentShaderCode.glsl" />
-    <None Include="PlaneTextureVertexShaderCode.glsl" />
+    <None Include="EdgeFragmentShaderCode.glsl" />
+    <None Include="EdgeVertexShaderCode.glsl" />
     <None Include="ReceiveShadowFragmentShaderCode.glsl" />
     <None Include="ReceiveShadowVertexShaderCode.glsl" />
     <None Include="ReflectionFragmentShaderCode.glsl" />

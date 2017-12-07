@@ -25,6 +25,7 @@ GLuint planeTextureProgramID;
 GLuint renderToTextureProgramID;
 GLuint receiveShadowProgramID;
 GLuint refractProgramID;
+GLuint edgeProgramID;
 
 GLuint cubeNumIndices;
 GLuint sphereNumIndices;
@@ -299,22 +300,6 @@ void MeGlWindow::paintGL()
 	mat4 worldToProjectionMatrix = viewToProjectionMatrix * worldToViewMatrix;
 	
 
-	glUseProgram(renderToTextureProgramID);
-
-	GLuint renderTextureTransformationUniformLocation = glGetUniformLocation(renderToTextureProgramID, "renderTextureModelToProjectionMatrix");
-
-	GLint RenderedTexture = glGetUniformLocation(renderToTextureProgramID, "myRenderedTexture");
-	glUniform1i(RenderedTexture, 3);
-
-	//mirror cube
-	glBindVertexArray(cubeVertexArrayObjectID);
-	mat4 mirrorCubeModelToWorldMatrix =
-		glm::translate(vec3(3.0f, 3.0f, 0.0f)) *
-		glm::scale(0.5f, 0.5f, 0.5f);;
-	mat4 mirrorCubeModelToProjectionMatrix = worldToProjectionMatrix * mirrorCubeModelToWorldMatrix;
-	glUniformMatrix4fv(renderTextureTransformationUniformLocation, 1, GL_FALSE, &mirrorCubeModelToProjectionMatrix[0][0]);
-	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
-
 
 	// plane shadow map
 	glUseProgram(receiveShadowProgramID);
@@ -357,47 +342,85 @@ void MeGlWindow::paintGL()
 	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeSizeOfVertexs);
 
 
-	//refract cube
-	glUseProgram(refractProgramID);
+	//rendered texture  Mirror
+	glUseProgram(renderToTextureProgramID);
 
-	GLuint refractTransformMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToProjectionMatrix");
-	GLuint refractModelToWorldMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToWorldMatrix");
+	GLuint renderTextureTransformationUniformLocation = glGetUniformLocation(renderToTextureProgramID, "renderTextureModelToProjectionMatrix");
 
+	GLint RenderedTexture = glGetUniformLocation(renderToTextureProgramID, "myRenderedTexture");
+	glUniform1i(RenderedTexture, 3);
 
-	glm::vec4 ambientLight = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
-	GLint ambientLightUniformLocation = glGetUniformLocation(refractProgramID, "ambientLight");
-	glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
-	//point light
-	GLint lightPositionUniformLocation = glGetUniformLocation(refractProgramID, "lightPosition");
-	glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
-
-	//glm::mat4 LightModelToProjectionMatrix = viewToProjectionMatrix * LightCamera.getWorldToViewMatrix();
-	//glUniformMatrix4fv(LightTransformMatrixUniformLocation, 1, GL_FALSE, &LightModelToProjectionMatrix[0][0]);
-
-	//get camera position 
-	GLint cameraPositionUniformLocation = glGetUniformLocation(refractProgramID, "cameraPosition");
-	glm::vec3 cameraPosition = camera.getPosition();
-	glUniform3fv(cameraPositionUniformLocation, 1, &cameraPosition[0]);
-
-	//texture 
-	GLint diffuseTexture = glGetUniformLocation(refractProgramID, "myTexture");
-	glUniform1i(diffuseTexture, 0);
-
-	//shadow map
-	GLint normalMap = glGetUniformLocation(refractProgramID, "NormalMap");
-	glUniform1i(normalMap, 1);
-
-	//Cube 5  refract
-
+	//mirror cube
 	glBindVertexArray(cubeVertexArrayObjectID);
-	mat4 refractCubeModelToWorldMatrix =
-		glm::translate(vec3(0.0f, 1.5f, -3.0f)) *
-		glm::scale(0.4f, 0.4f, 0.4f);
+	mat4 mirrorCubeModelToWorldMatrix =
+		glm::translate(vec3(4.0f, 4.0f, -5.0f)) *
+		glm::scale(2.0f, 2.0f, 2.0f);;
+	mat4 mirrorCubeModelToProjectionMatrix = worldToProjectionMatrix * mirrorCubeModelToWorldMatrix;
+	glUniformMatrix4fv(renderTextureTransformationUniformLocation, 1, GL_FALSE, &mirrorCubeModelToProjectionMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 
-	mat4 refractionTransformMatrix = worldToProjectionMatrix * refractCubeModelToWorldMatrix;
-	glUniformMatrix4fv(refractTransformMatrixUniformLocation, 1, GL_FALSE, &refractionTransformMatrix[0][0]);
-	glUniformMatrix4fv(refractModelToWorldMatrixUniformLocation, 1, GL_FALSE,
-		&refractCubeModelToWorldMatrix[0][0]);
+
+	// edge
+	glUseProgram(edgeProgramID);
+
+	GLuint edgeTransformMatrixUniformLocation = glGetUniformLocation(edgeProgramID, "edgeModelToProjectionMatrix");
+	GLuint edgeModelToWorldMatrixUniformLocation = glGetUniformLocation(edgeProgramID, "edgeModelToWorldMatrix");
+
+	// rendered texture 
+	GLint renderedTexture = glGetUniformLocation(edgeProgramID, "renderedTexture");
+	glUniform1i(renderedTexture, 3);
+
+	glBindVertexArray(planeVertexArrayObjectID);
+	mat4 edgeDisplayPlaneModelToWorldMatrix = 
+			glm::translate(vec3(-10.0f, 5.0f, -20.0f)) *
+			glm::rotate(90.0f, vec3(1.0f, 0.0f, 0.0f)) *
+			glm::scale(0.7f, 0.7f, 0.7f);;
+
+	mat4 edgeDisplayPlaneModelToProjectionMatrix = worldToProjectionMatrix * edgeDisplayPlaneModelToWorldMatrix;
+	glUniformMatrix4fv(edgeTransformMatrixUniformLocation, 1, GL_FALSE, &edgeDisplayPlaneModelToProjectionMatrix[0][0]);
+	glUniformMatrix4fv(edgeModelToWorldMatrixUniformLocation, 1, GL_FALSE,
+		&edgeDisplayPlaneModelToWorldMatrix[0][0]);
+	glDrawElements(GL_TRIANGLES, planeNumIndices, GL_UNSIGNED_SHORT, (void*)planeSizeOfVertexs);
+
+
+	////refract cube
+	//glUseProgram(refractProgramID);
+
+	//GLuint refractTransformMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToProjectionMatrix");
+	//GLuint refractModelToWorldMatrixUniformLocation = glGetUniformLocation(refractProgramID, "refractModelToWorldMatrix");
+
+
+	//glm::vec4 ambientLight = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
+	//GLint ambientLightUniformLocation = glGetUniformLocation(refractProgramID, "ambientLight");
+	//glUniform3fv(ambientLightUniformLocation, 1, &ambientLight[0]);
+	////point light
+	//GLint lightPositionUniformLocation = glGetUniformLocation(refractProgramID, "lightPosition");
+	//glUniform3fv(lightPositionUniformLocation, 1, &lightPosition[0]);
+
+	////get camera position 
+	//GLint cameraPositionUniformLocation = glGetUniformLocation(refractProgramID, "cameraPosition");
+	//glm::vec3 cameraPosition = camera.getPosition();
+	//glUniform3fv(cameraPositionUniformLocation, 1, &cameraPosition[0]);
+
+	////texture 
+	//GLint diffuseTexture = glGetUniformLocation(refractProgramID, "myTexture");
+	//glUniform1i(diffuseTexture, 0);
+
+	////shadow map
+	//GLint normalMap = glGetUniformLocation(refractProgramID, "NormalMap");
+	//glUniform1i(normalMap, 1);
+
+	////Cube 5  refract
+
+	//glBindVertexArray(cubeVertexArrayObjectID);
+	//mat4 refractCubeModelToWorldMatrix =
+	//	glm::translate(vec3(0.0f, 1.5f, -3.0f)) *
+	//	glm::scale(0.4f, 0.4f, 0.4f);
+
+	//mat4 refractionTransformMatrix = worldToProjectionMatrix * refractCubeModelToWorldMatrix;
+	//glUniformMatrix4fv(refractTransformMatrixUniformLocation, 1, GL_FALSE, &refractionTransformMatrix[0][0]);
+	//glUniformMatrix4fv(refractModelToWorldMatrixUniformLocation, 1, GL_FALSE,
+	//	&refractCubeModelToWorldMatrix[0][0]);
 	//glDrawElements(GL_TRIANGLES, cubeNumIndices, GL_UNSIGNED_SHORT, (void*)cubeSizeOfVertexs);
 }
 
@@ -591,6 +614,30 @@ void MeGlWindow::installShaders()
 	glAttachShader(receiveShadowProgramID, fragmentShaderID);
 
 	glLinkProgram(receiveShadowProgramID);
+
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
+	//edge  
+
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	temp = readShaderCode("EdgeVertexShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(vertexShaderID, 1, adapter, 0);
+	temp = readShaderCode("EdgeFragmentShaderCode.glsl");
+	adapter[0] = temp.c_str();
+	glShaderSource(fragmentShaderID, 1, adapter, 0);
+
+	glCompileShader(vertexShaderID);
+	glCompileShader(fragmentShaderID);
+
+	edgeProgramID = glCreateProgram();
+	glAttachShader(edgeProgramID, vertexShaderID);
+	glAttachShader(edgeProgramID, fragmentShaderID);
+
+	glLinkProgram(edgeProgramID);
 
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);

@@ -3,6 +3,7 @@
 in mat4 tangentToModelMatrix;
 in vec3 vertexPositionWorld;
 in vec2 uv;
+in vec3 Normal;
 
 uniform vec3 lightPosition;
 uniform vec3 cameraPosition;
@@ -19,8 +20,12 @@ out vec4 daColor;
 
 void main()
 {
-	//Normal
 
+	vec3 lightVectorWorld = normalize(lightPosition - vertexPositionWorld);
+	vec3 worldNormal = vec3(modelToWorldMatrix * vec4(Normal, 0.0));
+	float checkLit = ceil(dot((lightVectorWorld), normalize(worldNormal)));
+
+	//Normal
 	// get normal color from tangent space normal map
 	vec4 normalColor = texture(meNormal, uv);
 
@@ -32,23 +37,21 @@ void main()
 
 
 	//attenuation
-	float atten = 0.5;
+	float atten = 0.1;
 	float attenDistance = length(lightPosition - vertexPositionWorld);
 	float powAtten = pow(attenDistance, 2);
 	atten = 1.0 / (1.0 + atten * powAtten);
 
 	// Diffuse
-	vec3 lightVectorWorld = normalize(lightPosition - vertexPositionWorld);
-	float brightness = clamp(dot(vertexPositionWorld, normalize(normalWorldSpace)), 0, 1);
+	float brightness = clamp(dot(lightVectorWorld, normalize(normalWorldSpace)), 0, 1) * checkLit;
 	vec4 texColor = texture(myTexture, uv);
 	vec4 diffuseLight = texColor * brightness;
 
 	// Specular
-	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalWorldSpace);
+	vec3 reflectedLightVectorWorld = reflect(-lightVectorWorld, normalWorldSpace) * - checkLit;
 	vec3 viewDir = normalize(cameraPosition - vertexPositionWorld);
-	float gloss = clamp(dot(reflectedLightVectorWorld, viewDir), 0, 1);
-	gloss = pow(gloss, 100);
-	vec4 specularLight = vec4(gloss, gloss, gloss, 1);
+	float specularIntensity = clamp(dot(reflectedLightVectorWorld, viewDir), 0, 1);
+	vec4 specularLight = vec4(specularIntensity * vec3(0.5, 0.5, 0.5), 1.0);
 
 	//CubeMap Reflection
 	vec3 reflectDir = reflect(-viewDir, normalize(normalWorldSpace));

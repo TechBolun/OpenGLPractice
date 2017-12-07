@@ -6,8 +6,8 @@ in layout(location=2) vec3 normalModel;
 in layout(location=3) vec2 vertexTexCoord;
 in layout(location=4) vec4 tangent;
 
-uniform mat4 reflectionTransformMatrix;
-uniform mat4 reflectionModelToWorldMatrix;
+uniform mat4 refractModelToProjectionMatrix;
+uniform mat4 refractModelToWorldMatrix;
 
 out vec3 theColor;
 out vec2 uv;
